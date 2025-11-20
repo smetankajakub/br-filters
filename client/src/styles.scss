@@ -3,19 +3,27 @@
 
 @include mat.core();
 
-$my-primary: mat.define-palette(mat.$indigo-palette, 500);
-$my-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+// Custom theme matching design colors
+// Primary: #5eb3e4 (blue)
+// Accent/Tertiary: #ffd966 (yellow)
+// Warn: #e85d75 (red/pink)
 
-$my-theme: mat.define-light-theme((
+$my-theme: mat.define-theme((
   color: (
-    primary: $my-primary,
-    accent: $my-accent,
+    theme-type: light,
+    primary: mat.$azure-palette, // Closest to #5eb3e4
+    tertiary: mat.$yellow-palette, // Closest to #ffd966
   ),
-  typography: mat.define-typography-config(),
-  density: 0,
 ));
 
 @include mat.all-component-themes($my-theme);
+
+// Minimal color overrides
+:root {
+  --mat-sys-primary: #5eb3e4;
+  --mat-sys-tertiary: #ffd966;
+  --mat-sys-error: #e85d75;
+}
 
 * {
   margin: 0;

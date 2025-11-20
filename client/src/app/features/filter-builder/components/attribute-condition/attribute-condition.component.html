@@ -1,0 +1,42 @@
+<ng-container [formGroup]="conditionFormGroup()">
+  <mat-form-field appearance="outline" class="property-field">
+    <input
+      type="text"
+      matInput
+      placeholder="Select an attribute"
+      formControlName="property"
+      [matAutocomplete]="propertyAuto"
+    />
+    <mat-autocomplete #propertyAuto="matAutocomplete">
+      @for (property of availableProperties(); track property) {
+        <mat-option [value]="property">
+          {{ property }}
+        </mat-option>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="operator-field">
+    <mat-select
+      placeholder="Select operator"
+      formControlName="operator"
+      panelClass="operator-panel-with-tabs"
+    >
+      @for (operator of availableOperators(); track operator.value) {
+        <mat-option [value]="operator.value">
+          {{ operator.label }}
+        </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Value Input -->
+  <mat-form-field appearance="outline" class="value-field">
+    <input
+      type="text"
+      matInput
+      placeholder="Enter a value"
+      formControlName="value"
+    />
+  </mat-form-field>
+</ng-container>

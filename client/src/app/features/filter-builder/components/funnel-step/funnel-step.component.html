@@ -1,0 +1,70 @@
+<ng-container [formGroup]="stepFormGroup()">
+  <div class="step-header">
+    @if (!isEditingName) {
+      <h3 class="step-title" (click)="startEditingName()">
+        {{ stepIndex() + 1 }}. Step: {{ stepFormGroup().get('name')?.value }} <span class="edit-icon">✎</span>
+      </h3>
+    } @else {
+      <input
+        type="text"
+        formControlName="name"
+        (keyup.enter)="saveName()"
+        (keyup.escape)="cancelEditName()"
+        (blur)="saveName()"
+        class="name-input"
+        autofocus
+      />
+    }
+  </div>
+
+  <div class="step-body">
+    @if (conditionsArray(); as conditions) {
+      @for (conditionControl of conditions.controls; track conditionControl.value.id; let i = $index) {
+      <div class="condition-wrapper">
+        @if (i > 0) {
+          <div class="and-separator">AND</div>
+        }
+
+        <div class="condition-row" [class.subsequent-row]="i > 0">
+          @if (i === 0) {
+            <!-- First condition includes event autocomplete -->
+            <mat-form-field appearance="outline" class="event-autocomplete-field">
+              <input
+                type="text"
+                matInput
+                placeholder="Select event"
+                formControlName="eventType"
+                [matAutocomplete]="eventAuto"
+              />
+              <mat-autocomplete
+                #eventAuto="matAutocomplete"
+                [displayWith]="displayEventFn"
+              >
+                @for (eventType of (filteredEvents$ | async) || []; track eventType.name) {
+                  <mat-option [value]="eventType.name">
+                    {{ eventType.label }}
+                  </mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+          }
+
+          <!-- Property, operator, value for all conditions -->
+          <div formArrayName="conditions">
+            <app-attribute-condition
+              [conditionFormGroup]="getConditionFormGroup(i)"
+              [availableProperties]="getAvailableProperties()"
+              [availableOperators]="getOperatorsForCondition(i)"
+              (remove)="onRemoveCondition(i)"
+            />
+          </div>
+        </div>
+      </div>
+      }
+    }
+
+    <button mat-button color="primary" (click)="onAddCondition()">
+      Refine more
+    </button>
+  </div>
+</ng-container>

@@ -1,0 +1,50 @@
+<form [formGroup]="filterForm" (ngSubmit)="submitFilterForm()">
+  <header>
+    <h1>{{'Customer filter' | titlecase}}</h1>
+    <button type="button" mat-button color="warn" (click)="clearFilter()">Discard filters</button>
+  </header>
+
+  <section class="filter-builder-body">
+    @if (error(); as errorState) {
+      <article class="error-state">
+        <h3>{{ errorState.message }}</h3>
+        @if (errorState.details) {
+          <p class="error-details">{{ errorState.details }}</p>
+        }
+        <button mat-raised-button color="primary" (click)="eventSchemaService.loadEventSchema()">
+          Retry
+        </button>
+      </article>
+    } @else if (isLoading()) {
+      <article class="loading-state">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Loading event schema...</p>
+      </article>
+    } @else if (eventSchema(); as schema) {
+      <div class="funnel-steps" formArrayName="funnelSteps">
+        @for (stepControl of funnelStepsArray.controls; track stepControl.value.id; let i = $index) {
+          <app-funnel-step
+            [stepFormGroup]="getStepFormGroup(i)"
+            [stepIndex]="i"
+            [eventSchema]="schema"
+            (remove)="removeFunnelStep(i)"
+            (copy)="copyFunnelStep(i)"
+            (addCondition)="onAddCondition($event)"
+            (removeCondition)="onRemoveCondition($event.stepIndex, $event.conditionIndex)"
+          />
+        }
+      </div>
+
+      <button type="button" mat-button color="primary" (click)="addFunnelStep()">
+        + ADD FUNNEL STEP
+      </button>
+
+      <button type="submit" mat-raised-button color="accent" [disabled]="!filterForm.valid">
+        Apply filters
+      </button>
+    }
+  </section>
+  @if (showFormValue) {
+    <pre>{{ filterForm.value | json }}</pre>
+  }
+</form>
